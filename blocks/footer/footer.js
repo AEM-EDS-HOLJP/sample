@@ -1,20 +1,14 @@
-import { getMetadata } from '../../scripts/aem.js';
-import { loadFragment } from '../fragment/fragment.js';
-
-/**
- * loads and decorates the footer
- * @param {Element} block The footer block element
- */
-export default async function decorate(block) {
-  // load footer as fragment
-  const footerMeta = getMetadata('footer');
-  const footerPath = footerMeta ? new URL(footerMeta, window.location).pathname : '/footer';
-  const fragment = await loadFragment(footerPath);
-
-  // decorate footer DOM
-  block.textContent = '';
-  const footer = document.createElement('div');
-  while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
-
-  block.append(footer);
+export default function decorate(block) {
+  // decorate the quote as a blockquote element
+  const quoteDiv = block.querySelector(':scope > div > div');
+  const blockquote = document.createElement('blockquote');
+  blockquote.innerHTML = `${quoteDiv.innerHTML}`;
+  quoteDiv.parentElement.replaceWith(blockquote);
+  // decorate the author
+  const authorDiv = block.querySelector(':scope > div > div');
+  if (authorDiv) {
+    const p = document.createElement('p');
+    p.innerHTML = `<em> - ${authorDiv.innerText}</em>`;
+    authorDiv.parentElement.replaceWith(p);
+  }
 }
